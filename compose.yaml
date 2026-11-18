@@ -46,6 +46,22 @@ services:
       timeout: 30s
       retries: 50
 
+  ts-web:
+    image: python:3.13-slim
+    ports:
+      - 8899:8899
+    environment:
+      TS_DATABASE_URL: postgresql+psycopg2://airflow:db-password@postgres:5432/ts
+    volumes:
+      - ./plotlyweb:/app
+    working_dir: /app
+    command: sh -c "pip install --no-cache-dir -r requirements.txt && python app.py"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
+
 volumes:
   postgres_vol:
   pgadmin_data:
